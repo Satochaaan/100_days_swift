@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     var scoreLabel: UILabel!
     var letterButtons = [UIButton]()
     
-    var  activatedButtons = [UIButton]()
+    var activatedButtons = [UIButton]()
     var solutions = [String]()
     
     var score = 0 {
@@ -23,7 +23,8 @@ class ViewController: UIViewController {
         }
     }
     var level = 1
-
+    var correctAnswerCount = 0
+    
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
@@ -73,6 +74,8 @@ class ViewController: UIViewController {
         
         let buttonsView = UIView()
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsView.layer.borderWidth = 1
+        buttonsView.layer.borderColor = UIColor.lightGray.cgColor
         view.addSubview(buttonsView)
         
         NSLayoutConstraint.activate([
@@ -130,8 +133,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         loadlevel()
     }
-
-
+    
+    
     @objc func letterTapped(_ sender: UIButton) {
         guard let buttonTitle = sender.titleLabel?.text else { return }
         currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
@@ -151,19 +154,29 @@ class ViewController: UIViewController {
             
             currentAnswer.text = ""
             score += 1
+            correctAnswerCount += 1
             
-            if score % 7 == 0 {
+            if correctAnswerCount % 7 == 0 {
                 let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
                 present(ac, animated: true)
             }
             
+        } else {
+            if score > 0 {
+                score -= 1
+            }
+            
+            let ac = UIAlertController(title: "Miss!", message: "Missed!", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
         }
     }
     
     func levelUp(action: UIAlertAction) {
         level += 1
         solutions.removeAll(keepingCapacity: true)
+        correctAnswerCount = 0
         
         loadlevel()
         
