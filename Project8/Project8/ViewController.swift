@@ -145,31 +145,38 @@ class ViewController: UIViewController {
     @objc func submitTapped(_ sender: UIButton) {
         guard let answerText = currentAnswer.text else { return }
         
-        if let solutionPosition = solutions.firstIndex(of: answerText) {
-            activatedButtons.removeAll()
-            
-            var splitAnswers = answersLabel.text?.components(separatedBy: "\n")
-            splitAnswers?[solutionPosition] = answerText
-            answersLabel.text = splitAnswers?.joined(separator: "\n")
-            
-            currentAnswer.text = ""
-            score += 1
-            correctAnswerCount += 1
-            
-            if correctAnswerCount % 7 == 0 {
-                let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
-                ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
-                present(ac, animated: true)
+        DispatchQueue.global().async {
+            if let solutionPosition = self.solutions.firstIndex(of: answerText) {
+                self.activatedButtons.removeAll()
+                
+                DispatchQueue.main.async {
+                    var splitAnswers = self.answersLabel.text?.components(separatedBy: "\n")
+                    splitAnswers?[solutionPosition] = answerText
+                    self.answersLabel.text = splitAnswers?.joined(separator: "\n")
+                    self.currentAnswer.text = ""
+                }
+                self.score += 1
+                self.correctAnswerCount += 1
+                
+                if self.correctAnswerCount % 7 == 0 {
+                    DispatchQueue.main.async {
+                        let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
+                        ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: self.levelUp))
+                        self.present(ac, animated: true)
+                    }
+                }
+                
+            } else {
+                if self.score > 0 {
+                    self.score -= 1
+                }
+                
+                DispatchQueue.main.async {
+                    let ac = UIAlertController(title: "Miss!", message: "Missed!", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(ac, animated: true)
+                }
             }
-            
-        } else {
-            if score > 0 {
-                score -= 1
-            }
-            
-            let ac = UIAlertController(title: "Miss!", message: "Missed!", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .default))
-            present(ac, animated: true)
         }
     }
     
@@ -200,36 +207,40 @@ class ViewController: UIViewController {
         var solutionString = ""
         var letterBits = [String]()
         
-        if let levelFileURL = Bundle.main.url(forResource: "level\(level)", withExtension: "txt") {
-            if let levelContents = try? String(contentsOf: levelFileURL) {
-                var lines = levelContents.components(separatedBy: "\n")
-                lines.shuffle()
-                
-                for (index, line) in lines.enumerated() {
-                    let parts = line.components(separatedBy: ": ")
-                    let answer = parts[0]
-                    let clue = parts[1]
+        DispatchQueue.global().async {
+            if let levelFileURL = Bundle.main.url(forResource: "level\(self.level)", withExtension: "txt") {
+                if let levelContents = try? String(contentsOf: levelFileURL) {
+                    var lines = levelContents.components(separatedBy: "\n")
+                    lines.shuffle()
                     
-                    clueString += "\(index + 1). \(clue)\n"
-                    
-                    let solutionWord = answer.replacingOccurrences(of: "|", with: "")
-                    solutionString += "\(solutionWord.count) letters\n"
-                    solutions.append(solutionWord)
-                    
-                    let bits = answer.components(separatedBy: "|")
-                    letterBits += bits
+                    for (index, line) in lines.enumerated() {
+                        let parts = line.components(separatedBy: ": ")
+                        let answer = parts[0]
+                        let clue = parts[1]
+                        
+                        clueString += "\(index + 1). \(clue)\n"
+                        
+                        let solutionWord = answer.replacingOccurrences(of: "|", with: "")
+                        solutionString += "\(solutionWord.count) letters\n"
+                        self.solutions.append(solutionWord)
+                        
+                        let bits = answer.components(separatedBy: "|")
+                        letterBits += bits
+                    }
                 }
             }
-        }
-        
-        cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
-        answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        letterBits.shuffle()
-        
-        if letterBits.count == letterButtons.count {
-            for i in 0 ..< letterButtons.count {
-                letterButtons[i].setTitle(letterBits[i], for: .normal)
+            
+            DispatchQueue.main.async {
+                self.cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                letterBits.shuffle()
+                
+                if letterBits.count == self.letterButtons.count {
+                    for i in 0 ..< self.letterButtons.count {
+                        self.letterButtons[i].setTitle(letterBits[i], for: .normal)
+                    }
+                }
             }
         }
     }

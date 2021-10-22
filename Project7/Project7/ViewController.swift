@@ -77,13 +77,17 @@ class ViewController: UITableViewController {
         
         self.filteredPetitions.removeAll()
         
-        for petition in self.petitions {
-            if petition.title.contains(filterWord) || petition.body.contains(filterWord) {
-                self.filteredPetitions.append(petition)
+        DispatchQueue.global().async {
+            for petition in self.petitions {
+                if petition.title.contains(filterWord) || petition.body.contains(filterWord) {
+                    self.filteredPetitions.append(petition)
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
         }
-        
-        tableView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
