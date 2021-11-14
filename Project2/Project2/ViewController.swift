@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     var countries = [String]()
     var score = 0
     var correctAnswer = 0
+    var maxScore = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +33,8 @@ class ViewController: UIViewController {
         button3.layer.borderColor = UIColor.lightGray.cgColor
         
         askQuestion()
+        
+        maxScore = UserDefaults.standard.integer(forKey: "maxScore")
     }
     
     func askQuestion(action: UIAlertAction! = nil) {
@@ -46,6 +49,7 @@ class ViewController: UIViewController {
     
     @IBAction func buttonTaped(_ sender: UIButton) {
         var title: String
+        var message: String
         
         if sender.tag == correctAnswer {
             title = "Correct"
@@ -55,8 +59,18 @@ class ViewController: UIViewController {
             score -= 1
         }
         
+        // 最高得点チェック
+        if score > maxScore {
+            message = "Your Score is \(score)\n"
+            message += "Highest score update!!"
+            maxScore = score
+            UserDefaults.standard.set(maxScore, forKey: "maxScore")
+        } else {
+            message = "Your Score is \(score)"
+        }
+        
         let ac = UIAlertController(title: title,
-                                   message: "Your Score is \(score)",
+                                   message: message,
                                    preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "Continue",
                                    style: .default,
