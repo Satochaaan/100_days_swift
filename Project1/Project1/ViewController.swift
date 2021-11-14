@@ -9,6 +9,7 @@ import UIKit
 
 class ViewController: UITableViewController {
     var pictures = [String]()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,11 +30,13 @@ class ViewController: UITableViewController {
                 pictures.append(item)
             }
         }
-        print(pictures)
+//        print(pictures)
         pictures.sort()
-        print(pictures)
+//        print(pictures)
         
-        tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
+        DispatchQueue.main.async {
+            self.tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

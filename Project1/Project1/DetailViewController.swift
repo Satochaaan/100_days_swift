@@ -21,6 +21,8 @@ class DetailViewController: UIViewController {
         if let imageToLoad = selectedImage {
             imageView.image = UIImage(named: imageToLoad)
         }
+        
+        saveCounts()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -33,4 +35,16 @@ class DetailViewController: UIViewController {
         navigationController?.hidesBarsOnTap = false
     }
 
+    func saveCounts() {
+        guard let imageName = selectedImage else { return }
+        
+        var count = 0
+        let defaults = UserDefaults.standard
+        
+        count = defaults.integer(forKey: imageName)
+        count += 1
+        
+        defaults.set(count, forKey: imageName)
+        print(imageName + ": " + String(count) + "--------")
+    }
 }
