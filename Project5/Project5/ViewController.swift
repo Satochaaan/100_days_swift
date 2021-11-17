@@ -18,11 +18,16 @@ class ViewController: UITableViewController {
         navigationItem.rightBarButtonItem =
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(promptForAnswer))
         navigationItem.leftBarButtonItem =
-            UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(startGame))
+            UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(restartGame))
         
-        if let startWordURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
-            if let startWords = try? String(contentsOf: startWordURL) {
-                allWords = startWords.components(separatedBy: "\n")
+        allWords = UserDefaults.standard.stringArray(forKey: "allWords") ?? [String]()
+        usedWords = UserDefaults.standard.stringArray(forKey: "usedWords") ?? [String]()
+        
+        if allWords.isEmpty {
+            if let startWordURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
+                if let startWords = try? String(contentsOf: startWordURL) {
+                    allWords = startWords.components(separatedBy: "\n")
+                }
             }
         }
         
@@ -30,13 +35,29 @@ class ViewController: UITableViewController {
             allWords = ["silkworm"]
         }
         
+        UserDefaults.standard.set(allWords, forKey: "allWords")
+        
         startGame()
     }
     
     // MARK: - Functions
     @objc func startGame() {
-        title = allWords.randomElement()
+        let lastTitle = UserDefaults.standard.string(forKey: "title") ?? ""
+        
+        if lastTitle.isEmpty {
+            title = allWords.randomElement()
+            UserDefaults.standard.set(title, forKey: "title")
+        } else {
+            title = lastTitle
+        }
+        
+        tableView.reloadData()
+    }
+    
+    @objc func restartGame() {
         usedWords.removeAll(keepingCapacity: true)
+        title = allWords.randomElement()
+        UserDefaults.standard.set(title, forKey: "title")
         tableView.reloadData()
     }
     
@@ -63,6 +84,7 @@ class ViewController: UITableViewController {
             if isOriginal(word: lowerAnswer) {
                 if isReal(word: lowerAnswer) {
                     usedWords.insert(lowerAnswer, at: 0)
+                    UserDefaults.standard.set(usedWords, forKey: "usedWords")
                     
                     let indexPath = IndexPath(row: 0, section: 0)
                     tableView.insertRows(at: [indexPath], with: .automatic)
