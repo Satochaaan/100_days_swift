@@ -72,6 +72,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         
         let beginImage = CIImage(image: currentImage)
         currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
+        
+        imageView.alpha = 0
+        UIView.animate(withDuration: 1, delay: 0, options: []) {
+            self.imageView.alpha = 1
+        }
+        
         applyProcessing()
     }
     
@@ -84,6 +90,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     }
 
     func applyProcessing() {
+        guard let outputImage = currentFilter.outputImage else { return }
         let inputKeys = currentFilter.inputKeys
         
         if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(intensity.value, forKey: kCIInputIntensityKey) }
@@ -91,7 +98,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(intensity.value * 10, forKey: kCIInputScaleKey) }
         if inputKeys.contains(kCIInputCenterKey) { currentFilter.setValue(CIVector(x: currentImage.size.width / 2, y: currentImage.size.height / 2), forKey: kCIInputCenterKey) }
         
-        if let cgimg = context.createCGImage(currentFilter.outputImage!, from: currentFilter.outputImage!.extent) {
+        if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
             let processedImage = UIImage(cgImage: cgimg)
             imageView.image = processedImage
         }
