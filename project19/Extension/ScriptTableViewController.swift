@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MobileCoreServices
 
 class ScriptTableViewController: UITableViewController {
     
@@ -22,14 +23,20 @@ class ScriptTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Script", for: indexPath)
         cell.textLabel?.text = scripts[indexPath.row].tableName
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let scriptSaved = scripts[indexPath.row]
-        
         // JS実行
+        let item = NSExtensionItem()
+        let argument: NSDictionary = ["customJavaScript": scripts[indexPath.row].tableScript!]
+        let webDictionary: NSDictionary = [NSExtensionJavaScriptFinalizeArgumentKey: argument]
+        let customJavaScript = NSItemProvider(item: webDictionary, typeIdentifier: kUTTypePropertyList as String)
+        item.attachments = [customJavaScript]
+
+        extensionContext!.completeRequest(returningItems: [item])
+
     }
 }

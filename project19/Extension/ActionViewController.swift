@@ -14,6 +14,7 @@ class ActionViewController: UIViewController {
 
 	var pageTitle = ""
 	var pageURL = ""
+    var savedScripts = [ScriptSavedForTableView]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +26,7 @@ class ActionViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
                                                 barButtonSystemItem: .action,
                                                 target: self,
-                                                action: #selector(showSelectScriptAlert))
+                                                action: #selector(showSavedScriptList))
 
 		let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -49,7 +50,15 @@ class ActionViewController: UIViewController {
     }
 
 	@objc func done() {
-        scriptSelected(text: script.text)
+        let ac = UIAlertController(title: "Please Script Name.", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        ac.addAction(UIAlertAction(title: "Save", style: .default, handler: { [weak self, weak ac] _ in
+            guard let name = ac?.textFields?[0].text else { return }
+            self?.saveScriptByURL(scriptName: name)
+            self?.scriptSelected(text: self?.script.text ?? "")
+        }))
+        
+        present(ac, animated: true)
 	}
     
     func scriptSelected(text: String) {
@@ -94,12 +103,42 @@ class ActionViewController: UIViewController {
         present(ac, animated: true)
     }
     
-    func saveScriptByURL(script: String, urlString: String) {
-        guard let url = URL(string: urlString) else { return }
+    @objc func showSavedScriptList() {
+        guard let url = URL(string: pageURL) else { return }
         guard let host = url.host else { return }
         
         let defaults = UserDefaults.standard
+        if let savedScriptsData = defaults.object(forKey: host) as? Data {
+            let jsonDecoder = JSONDecoder()
+            
+            do {
+                savedScripts = try jsonDecoder.decode([ScriptSavedForTableView].self, from: savedScriptsData)
+            } catch {
+                print("Failed to load scripts.")
+                return
+            }
+            
+            if let vc = storyboard?.instantiateViewController(withIdentifier: "ScriptTable") as? ScriptTableViewController {
+                vc.scripts = savedScripts
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+    
+    func saveScriptByURL(scriptName: String) {
+        guard let url = URL(string: pageURL) else { return }
+        guard let host = url.host else { return }
         
-        defaults.set(script, forKey: host)
+        let jsonEncoder = JSONEncoder()
+        let defaults = UserDefaults.standard
+        
+        let script = ScriptSavedForTableView(tableName: scriptName, tableScript: script.text)
+        savedScripts.append(script)
+        
+        if let savedData = try? jsonEncoder.encode(savedScripts) {
+            defaults.set(savedData, forKey: host)
+        } else {
+            print("Failed to save pictures.")
+        }
     }
 }
