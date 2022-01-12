@@ -22,6 +22,13 @@ class GameScene: SKScene {
             scoreLabel.text = "Score: \(score)"
 		}
 	}
+    var showCount = 0 {
+        didSet {
+            if showCount > 2 {
+                gameTimer.invalidate()
+            }
+        }
+    }
 
 	override func didMove(to view: SKView) {
 		// 背景設定
@@ -125,6 +132,8 @@ class GameScene: SKScene {
 		default:
 			break
 		}
+        
+        showCount += 1
 	}
 
 	func checkTouches(_ touches: Set<UITouch>) {
