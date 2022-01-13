@@ -184,11 +184,17 @@ class GameScene: SKScene {
 	}
 
 	func explode(firework: SKNode) {
+        // TODO: 爆発後に削除Challenge3
 		let emitter = SKEmitterNode(fileNamed: "explode")!
 		emitter.position = firework.position
 		addChild(emitter)
+        
+        // 爆発前を削除
+        firework.removeFromParent()
 
-		firework.removeFromParent()
+        // 爆発エフェクトを完了後に削除
+        let wait = SKAction.wait(forDuration: TimeInterval(0.6))
+        firework.run(SKAction.sequence([wait, SKAction.removeFromParent()]))
 	}
 
 	func explodeFireworks() {
