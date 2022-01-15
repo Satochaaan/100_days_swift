@@ -31,7 +31,7 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
 		}
 	}
 
-	@objc func scheduleLocal() {
+    @objc func scheduleLocal() {
 		registerCategories()
 
 		let center = UNUserNotificationCenter.current()
@@ -47,20 +47,31 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
 		content.sound = UNNotificationSound.default
 
 		var dateComponents = DateComponents()
-		dateComponents.hour = 10
-		dateComponents.minute = 25
+		dateComponents.hour = 12
+		dateComponents.minute = 16
 		let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
 
 		let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
 		center.add(request)
 	}
+    
+    // 24時間後に再通知
+    func remindLocal(content: UNNotificationContent) {
+        let center = UNUserNotificationCenter.current()
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: (86400), repeats: false)
+
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        center.add(request)
+    }
 
 	func registerCategories() {
 		let center = UNUserNotificationCenter.current()
 		center.delegate = self
 
 		let show = UNNotificationAction(identifier: "show", title: "Tell me more…", options: .foreground)
-		let category = UNNotificationCategory(identifier: "alarm", actions: [show], intentIdentifiers: [])
+        let remind = UNNotificationAction(identifier: "remind", title: "Remind me later", options: .foreground)
+		let category = UNNotificationCategory(identifier: "alarm", actions: [show, remind], intentIdentifiers: [])
 
 		center.setNotificationCategories([category])
 	}
@@ -81,6 +92,11 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
 			case "show":
 				print("Show more information…")
                 showAlertController(title: "Notification Open", message: "Show Identifier")
+            
+            case "remind":
+                print("Remind me later…")
+                remindLocal(content: response.notification.request.content)
+                showAlertController(title: "Notification Open", message: "Remind Identifier")
 
 			default:
                 showAlertController(title: "Notification Open", message: "Unknown Identifier")
