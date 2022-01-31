@@ -48,8 +48,12 @@ class ViewController: UIViewController {
         memoListTableView.reloadData()
     }
     
-    func save() {
+    func save(index: Int, editedMemo: Memo) {
+        guard index < memoList.count else { return }
+        
         let jsonEncoder = JSONEncoder()
+        
+        memoList[index] = editedMemo
         
         if let savedData = try? jsonEncoder.encode(memoList) {
             let defaults = UserDefaults.standard
@@ -60,7 +64,18 @@ class ViewController: UIViewController {
     }
     
     @objc func newMemo() {
+        let newMemo = Memo(title: "", memo: "", date: "")
+        let index = memoList.count
         
+        memoList.append(newMemo)
+        memoListTableView.reloadData()
+        
+        if let vc = storyboard?.instantiateViewController(identifier: "MemoEdit", creator: { coder in
+            MemoEditViewController(coder: coder, index: index, memo: self.memoList[index])
+        }) {
+            vc.saveMemo = self.save
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 
@@ -81,8 +96,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let vc = storyboard?.instantiateViewController(withIdentifier: "MemoEdit") as? MemoEditViewController {
-            vc.memo = memoList[indexPath.row]
+        if let vc = storyboard?.instantiateViewController(identifier: "MemoEdit", creator: { coder in
+            MemoEditViewController(coder: coder, index: indexPath.row, memo: self.memoList[indexPath.row])
+        }) {
+            vc.saveMemo = self.save
             navigationController?.pushViewController(vc, animated: true)
         }
     }
