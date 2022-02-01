@@ -42,9 +42,6 @@ class ViewController: UIViewController {
             }
         }
         
-        memoList.append(Memo(title: "title1", memo: "memo1", date: "2022-01-21"))
-        memoList.append(Memo(title: "title2", memo: "memo2", date: "2022-01-22"))
-        memoList.append(Memo(title: "title3", memo: "memo3", date: "2022-01-23"))
         memoListTableView.reloadData()
     }
     
@@ -58,6 +55,7 @@ class ViewController: UIViewController {
         if let savedData = try? jsonEncoder.encode(memoList) {
             let defaults = UserDefaults.standard
             defaults.set(savedData, forKey: "memoList")
+            memoListTableView.reloadData()
         } else {
             print("Failed to save people.")
         }

@@ -15,7 +15,7 @@ class MemoEditViewController: UIViewController {
     var index: Int
     
     // closure
-    var saveMemo: ((Int, Memo) -> Void)!
+    var saveMemo: ((Int, Memo) -> Void) = { _, _ in }
     
     // MARK: - Initializers
     required init?(coder: NSCoder) {
@@ -47,13 +47,56 @@ class MemoEditViewController: UIViewController {
         navigationController?.isToolbarHidden = false
         
         memoTextView.text = memo.memo
-    }
-
-    @objc func tappedComplete() {
         
+        // TextViewのInset設定
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    @objc func tappedComplete() {
+        memo.title = createTitleByMemo()
+        memo.date = createNowDateTime()
+        memo.memo = memoTextView.text
+        
+        saveMemo(index, memo)
+        memoTextView.resignFirstResponder()
     }
     
     @objc func newMemo() {
         
+    }
+    
+    @objc func adjustForKeyboard(notification: Notification) {
+        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+
+        let keyboardScreenEndFrame = keyboardValue.cgRectValue
+        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+
+        if notification.name == UIResponder.keyboardWillHideNotification {
+            memoTextView.contentInset = .zero
+        } else {
+            memoTextView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height - view.safeAreaInsets.bottom, right: 0)
+        }
+
+        memoTextView.scrollIndicatorInsets = memoTextView.contentInset
+
+        let selectedRange = memoTextView.selectedRange
+        memoTextView.scrollRangeToVisible(selectedRange)
+    }
+    
+    private func createTitleByMemo() -> String {
+        guard let memoText = memoTextView.text else { return "No Title." }
+        let array = memoText.components(separatedBy: "\n")
+        return array[0]
+    }
+    
+    private func createNowDateTime() -> String{
+        let f = DateFormatter()
+        f.timeStyle = .medium
+        f.dateStyle = .medium
+        f.locale = Locale(identifier: "ja_JP")
+        let now = Date()
+        return f.string(from: now)
     }
 }
