@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         memoListTableView.reloadData()
     }
     
-    func save(index: Int, editedMemo: Memo) {
+    func saveMemo(index: Int, editedMemo: Memo) {
         guard index < memoList.count else { return }
         
         let jsonEncoder = JSONEncoder()
@@ -57,7 +57,23 @@ class ViewController: UIViewController {
             defaults.set(savedData, forKey: "memoList")
             memoListTableView.reloadData()
         } else {
-            print("Failed to save people.")
+            print("Failed to save memo.")
+        }
+    }
+    
+    func deleteMemo(index: Int) {
+        guard index < memoList.count else { return }
+        
+        memoList.remove(at: index)
+        
+        let jsonEncoder = JSONEncoder()
+        
+        if let savedData = try? jsonEncoder.encode(memoList) {
+            let defaults = UserDefaults.standard
+            defaults.set(savedData, forKey: "memoList")
+            memoListTableView.reloadData()
+        } else {
+            print("Failed to delete memo.")
         }
     }
     
@@ -71,7 +87,8 @@ class ViewController: UIViewController {
         if let vc = storyboard?.instantiateViewController(identifier: "MemoEdit", creator: { coder in
             MemoEditViewController(coder: coder, index: index, memo: self.memoList[index])
         }) {
-            vc.saveMemo = self.save
+            vc.saveMemo = self.saveMemo
+            vc.deleteMemo = self.deleteMemo
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -97,7 +114,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         if let vc = storyboard?.instantiateViewController(identifier: "MemoEdit", creator: { coder in
             MemoEditViewController(coder: coder, index: indexPath.row, memo: self.memoList[indexPath.row])
         }) {
-            vc.saveMemo = self.save
+            vc.saveMemo = self.saveMemo
+            vc.deleteMemo = self.deleteMemo
             navigationController?.pushViewController(vc, animated: true)
         }
     }

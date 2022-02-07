@@ -16,6 +16,7 @@ class MemoEditViewController: UIViewController {
     
     // closure
     var saveMemo: ((Int, Memo) -> Void) = { _, _ in }
+    var deleteMemo: ((Int) -> Void) = { _ in }
     
     // MARK: - Initializers
     required init?(coder: NSCoder) {
@@ -37,7 +38,7 @@ class MemoEditViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedComplete))
         
         // toolbar設定
-        let delete = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: nil)
+        let delete = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(tappedDelete))
         delete.tintColor = .systemRed
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let newMemo = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(newMemo))
@@ -65,6 +66,11 @@ class MemoEditViewController: UIViewController {
     
     @objc func newMemo() {
         
+    }
+    
+    @objc func tappedDelete() {
+        deleteMemo(index)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func adjustForKeyboard(notification: Notification) {
