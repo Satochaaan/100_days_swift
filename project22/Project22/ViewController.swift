@@ -13,6 +13,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 	@IBOutlet var distanceReading: UILabel!
 
 	var locationManager: CLLocationManager!
+    var isFirstDetected: Bool = false
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -65,7 +66,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 	}
 
 	func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-		if beacons.count > 0 {
+        if !isFirstDetected {
+            isFirstDetected = true
+            
+            let f = DateFormatter()
+            f.timeStyle = .full
+            f.dateStyle = .full
+            f.locale = Locale(identifier: "ja_JP")
+            let now = Date()
+            let nowString = f.string(from: now)
+            
+            let ac = UIAlertController(title: "Detected!", message: nowString, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(ac, animated: true, completion: nil)
+        }
+        
+        if beacons.count > 0 {
 			let beacon = beacons[0]
 			update(distance: beacon.proximity)
 		} else {
