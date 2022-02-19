@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -18,22 +17,44 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rmN-rP-FiW">
+                                <rect key="frame" x="59.5" y="205.5" width="256" height="256"/>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="256" id="D6e-r7-Q5b"/>
+                                    <constraint firstAttribute="width" constant="256" id="xAD-LU-xIh"/>
+                                </constraints>
+                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UNKNOWN" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pqC-4z-XLI">
-                                <rect key="frame" x="91.5" y="309.5" width="192" height="48"/>
+                                <rect key="frame" x="91.5" y="277.5" width="192" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="40"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UNKNOWN" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V0k-aa-zHK">
+                                <rect key="frame" x="91.5" y="341.5" width="192" height="48"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="40"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="u6z-cn-oNq"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="pqC-4z-XLI" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="5dx-9B-d5d"/>
+                            <constraint firstItem="pqC-4z-XLI" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-32" id="5dx-9B-d5d"/>
+                            <constraint firstItem="V0k-aa-zHK" firstAttribute="centerX" secondItem="u6z-cn-oNq" secondAttribute="centerX" id="9DL-VO-Ebw"/>
+                            <constraint firstItem="V0k-aa-zHK" firstAttribute="centerY" secondItem="u6z-cn-oNq" secondAttribute="centerY" constant="32" id="9Wq-Qa-WGo"/>
+                            <constraint firstItem="rmN-rP-FiW" firstAttribute="centerY" secondItem="u6z-cn-oNq" secondAttribute="centerY" id="NQK-aP-INs"/>
                             <constraint firstItem="pqC-4z-XLI" firstAttribute="centerX" secondItem="u6z-cn-oNq" secondAttribute="centerX" id="fYW-RJ-H2a"/>
+                            <constraint firstItem="rmN-rP-FiW" firstAttribute="centerX" secondItem="u6z-cn-oNq" secondAttribute="centerX" id="gEv-9I-qmu"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="u6z-cn-oNq"/>
                     </view>
                     <connections>
+                        <outlet property="circleView" destination="rmN-rP-FiW" id="KDj-mt-NVg"/>
+                        <outlet property="circleViewHeightConstraint" destination="D6e-r7-Q5b" id="scb-9W-4Dw"/>
+                        <outlet property="circleViewWidthConstraint" destination="xAD-LU-xIh" id="iHZ-mw-Zes"/>
                         <outlet property="distanceReading" destination="pqC-4z-XLI" id="Ra8-U8-6t3"/>
+                        <outlet property="distanceReading2" destination="V0k-aa-zHK" id="x0w-1v-5zo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -41,4 +62,9 @@
             <point key="canvasLocation" x="117.59999999999999" y="123.68815592203899"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemTealColor">
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>
