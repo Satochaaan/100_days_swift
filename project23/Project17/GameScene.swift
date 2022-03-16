@@ -17,6 +17,28 @@ enum SequenceType: CaseIterable {
 	case oneNoBomb, one, twoWithOneBomb, two, three, four, chain, fastChain
 }
 
+struct Const {
+    // enemyType
+    static let enemyTypeBomb = 0
+    static let enemyTypePenguin = 1
+    
+    // bomb
+    static let bombZposition: CGFloat = 1
+    
+    // enemy position
+    static let xRandomPositionMin = 64
+    static let xRandomPositionMax = 960
+    static let yPosition = -128
+    
+    // enemy velocity
+    static let xAngularVelocityMin: CGFloat = -6
+    static let xAngularVelocityMax: CGFloat = 6
+    static let xRandomVelocityBothEndsMin = 8
+    static let xRandomVelocityBothEndsMax = 15
+    static let xRandomVelocityMiddleMin = 3
+    static let xRandomVelocityMiddleMax = 5
+}
+
 class GameScene: SKScene {
 	var gameScore: SKLabelNode!
 	var score = 0 {
@@ -261,62 +283,63 @@ class GameScene: SKScene {
         var enemyType = Int.random(in: 0...6)
 
 		if forceBomb == .never {
-			enemyType = 1
+            enemyType = Const.enemyTypePenguin
 		} else if forceBomb == .always {
-			enemyType = 0
+            enemyType = Const.enemyTypeBomb
 		}
 
-		if enemyType == 0 {
-			// 1
+        if enemyType == Const.enemyTypeBomb {
+			// 1 爆弾作成
 			enemy = SKSpriteNode()
-			enemy.zPosition = 1
+            enemy.zPosition = Const.bombZposition
 			enemy.name = "bombContainer"
 
-			// 2
+			// 2 コンテナに追加
 			let bombImage = SKSpriteNode(imageNamed: "sliceBomb")
 			bombImage.name = "bomb"
 			enemy.addChild(bombImage)
 
-			// 3
+			// 3 効果音鳴っている場合は停止
 			if bombSoundEffect != nil {
 				bombSoundEffect.stop()
 				bombSoundEffect = nil
 			}
 
-			// 4
+			// 4 効果音作成して再生
 			let path = Bundle.main.path(forResource: "sliceBombFuse.caf", ofType:nil)!
 			let url = URL(fileURLWithPath: path)
 			let sound = try! AVAudioPlayer(contentsOf: url)
 			bombSoundEffect = sound
 			sound.play()
 
-			// 5
+			// 5 爆弾の導火線エフェクト追加
 			let emitter = SKEmitterNode(fileNamed: "sliceFuse")!
 			emitter.position = CGPoint(x: 76, y: 64)
 			enemy.addChild(emitter)
 		} else {
+            // ペンギン追加
 			enemy = SKSpriteNode(imageNamed: "penguin")
 			run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
 			enemy.name = "enemy"
 		}
 
 		// 1
-		let randomPosition = CGPoint(x: Int.random(in: 64...960), y: -128)
+        let randomPosition = CGPoint(x: Int.random(in: Const.xRandomPositionMin...Const.xRandomPositionMax), y: Const.yPosition)
 		enemy.position = randomPosition
 
 		// 2
-        let randomAngularVelocity = CGFloat.random(in: -6...6) / 2.0
+        let randomAngularVelocity = CGFloat.random(in: Const.xAngularVelocityMin...Const.xAngularVelocityMax) / 2.0
 		var randomXVelocity = 0
 
 		// 3
 		if randomPosition.x < 256 {
-			randomXVelocity = Int.random(in: 8...15)
+			randomXVelocity = Int.random(in: Const.xRandomVelocityBothEndsMin...Const.xRandomVelocityBothEndsMax)
 		} else if randomPosition.x < 512 {
-			randomXVelocity = Int.random(in: 3...5)
+            randomXVelocity = Int.random(in: Const.xRandomVelocityMiddleMin...Const.xRandomVelocityMiddleMax)
 		} else if randomPosition.x < 768 {
-			randomXVelocity = -Int.random(in: 3...5)
+			randomXVelocity = -Int.random(in: Const.xRandomVelocityMiddleMin...Const.xRandomVelocityMiddleMax)
 		} else {
-			randomXVelocity = -Int.random(in: 8...15)
+            randomXVelocity = -Int.random(in: Const.xRandomVelocityBothEndsMin...Const.xRandomVelocityBothEndsMax)
 		}
 
 		// 4
