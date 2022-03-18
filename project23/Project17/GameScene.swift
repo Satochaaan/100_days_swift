@@ -51,6 +51,8 @@ class GameScene: SKScene {
 			gameScore.text = "Score: \(score)"
 		}
 	}
+    
+    var gameOver: SKLabelNode!
 
 	var livesImages = [SKSpriteNode]()
 	var lives = 3
@@ -107,6 +109,17 @@ class GameScene: SKScene {
 
 		gameScore.position = CGPoint(x: 8, y: 8)
 	}
+    
+    func createGameOver() {
+        gameOver = SKLabelNode(fontNamed: "Chalkduster")
+        gameOver.text = "GameOver"
+        gameOver.horizontalAlignmentMode = .left
+        gameOver.fontSize = 80
+
+        addChild(gameOver)
+
+        gameOver.position = CGPoint(x: 270, y: 340)
+    }
 
 	func createLives() {
 		for i in 0 ..< 3 {
@@ -520,5 +533,7 @@ class GameScene: SKScene {
 			livesImages[1].texture = SKTexture(imageNamed: "sliceLifeGone")
 			livesImages[2].texture = SKTexture(imageNamed: "sliceLifeGone")
 		}
+        
+        createGameOver()
 	}
 }
