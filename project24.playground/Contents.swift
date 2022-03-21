@@ -1,7 +1,10 @@
 //: Playground - noun: a place where people can play
 
 import UIKit
+import XCPlayground
+import PlaygroundSupport
 
+// MARK: - Day80-81
 extension Int {
 	mutating func plusOne() {
 		self += 1
@@ -81,3 +84,45 @@ attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 24), range
 attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 32), range: NSRange(location: 10, length: 4))
 attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 40), range: NSRange(location: 15, length: 6))
 
+// MARK: - Day82 Challenge
+
+// challenge1
+extension UIView {
+    func bounceOut(duration: TimeInterval) {
+        UIView.animate(withDuration: duration) {
+            self.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001)
+        }
+    }
+}
+
+let uiview = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+uiview.backgroundColor = .blue
+PlaygroundPage.current.liveView = uiview
+uiview.bounceOut(duration: 10)
+
+// challenge2
+extension Int {
+    func times(_ closure: () -> Void) {
+        guard self > 0 else { return }
+        for _ in 0..<self {
+            closure()
+        }
+    }
+}
+
+let timesNum = 4
+timesNum.times {
+    print("hogehoge")
+}
+
+// challenge3
+extension Array where Element: Comparable {
+    mutating func remove(item: Element) {
+        if let index = self.firstIndex(of: item) {
+            self.remove(at: index)
+        }
+    }
+}
+
+var numbers = [1, 2, 3, 4, 5]
+numbers.remove(item: 3)
