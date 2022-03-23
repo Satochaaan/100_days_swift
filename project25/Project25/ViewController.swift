@@ -29,7 +29,12 @@ class ViewController: UICollectionViewController,
 
 		navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showConnectionPrompt))
 		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
-
+        
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let message = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(inputMessage))
+        toolbarItems = [spacer, message]
+        navigationController?.isToolbarHidden = false
+        
 		peerID = MCPeerID(displayName: UIDevice.current.name)
 		mcSession = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .required)
 		mcSession.delegate = self
@@ -63,21 +68,8 @@ class ViewController: UICollectionViewController,
 
 		images.insert(image, at: 0)
 		collectionView?.reloadData()
-
-		// 1
-		if mcSession.connectedPeers.count > 0 {
-			// 2
-			if let imageData = image.pngData() {
-				// 3
-				do {
-					try mcSession.send(imageData, toPeers: mcSession.connectedPeers, with: .reliable)
-				} catch {
-					let ac = UIAlertController(title: "Send error", message: error.localizedDescription, preferredStyle: .alert)
-					ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-					present(ac, animated: true)
-				}
-			}
-		}
+        
+        sendImage(img: image)
 	}
 
 	@objc func showConnectionPrompt() {
@@ -129,7 +121,13 @@ class ViewController: UICollectionViewController,
 			print("Connecting: \(peerID.displayName)")
 
 		case MCSessionState.notConnected:
+            // Challenge1 切断
 			print("Not Connected: \(peerID.displayName)")
+            DispatchQueue.main.async { [unowned self] in
+                let ac = UIAlertController(title: "Disconnected", message: peerID.displayName, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(ac, animated: true)
+            }
 		}
 	}
 
@@ -139,7 +137,14 @@ class ViewController: UICollectionViewController,
 				self.images.insert(image, at: 0)
 				self.collectionView?.reloadData()
 			}
-		}
+        } else {
+            let message = String(decoding: data, as: UTF8.self)
+            DispatchQueue.main.async { [unowned self] in
+                let ac = UIAlertController(title: "Message Received", message: message, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(ac, animated: true)
+            }
+        }
 	}
 
 	func sendImage(img: UIImage) {
@@ -155,6 +160,34 @@ class ViewController: UICollectionViewController,
 			}
 		}
 	}
+    
+    @objc func inputMessage() {
+        let ac = UIAlertController(title: "Send Message", message: nil, preferredStyle: .alert)
+        ac.addTextField(configurationHandler: nil)
+        
+        let sendAction = UIAlertAction(title: "Send", style: .default) { [weak self] _ in
+            guard let text = ac.textFields?.first?.text, !text.isEmpty else { return }
+            self?.sendMessage(message: text)
+        }
+        
+        ac.addAction(sendAction)
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(ac, animated: true)
+    }
+    
+    func sendMessage(message: String) {
+        if mcSession.connectedPeers.count > 0 {
+            let messageData = Data(message.utf8)
+            do {
+                try mcSession.send(messageData, toPeers: mcSession.connectedPeers, with: .reliable)
+            } catch let error as NSError {
+                let ac = UIAlertController(title: "Send error", message: error.localizedDescription, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                present(ac, animated: true)
+            }
+        }
+    }
     
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         let ac = UIAlertController(title: "Project25", message: "'\(peerID.displayName)' wants to connect", preferredStyle: .alert)
