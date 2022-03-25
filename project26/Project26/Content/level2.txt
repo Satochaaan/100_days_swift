@@ -1,8 +1,8 @@
 xxxxxxxxxxxxxxxx
 x xs      xs  sx
-x xxxxxx vx vv x
-x         x vv x
-xfxxx xxxxx    x
+xsxxxxxx vx vv x
+xs       fx vv x
+xsxxx xxxxx    x
 xsxvxs      xv x
 xvxsxxxxxxxxxv x
 xxx xxxxxxvs   x

@@ -20,6 +20,7 @@ enum CollisionTypes: UInt32 {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var player: SKSpriteNode!
 	var lastTouchPosition: CGPoint?
+    var nowLevel: Int!
 
     var motionManager: CMMotionManager!
 
@@ -48,6 +49,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		physicsWorld.gravity = CGVector(dx: 0, dy: 0)
 		physicsWorld.contactDelegate = self
 
+        nowLevel = 1
 		loadLevel()
 		createPlayer()
 
@@ -65,7 +67,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func loadLevelLines() -> [String] {
         var lines = [String]()
         
-        if let levelPath = Bundle.main.path(forResource: "level1", ofType: "txt") {
+        if let levelPath = Bundle.main.path(forResource: "level\(String(nowLevel))", ofType: "txt") {
             if let levelString = try? String(contentsOfFile: levelPath) {
                 lines = levelString.components(separatedBy: "\n")
             }
@@ -207,7 +209,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			node.removeFromParent()
 			score += 1
 		} else if node.name == "finish" {
-			// next level?
+			nextLevel()
 		}
 	}
+    
+    func nextLevel() {
+        self.removeAllChildren()
+        
+        let background = SKSpriteNode(imageNamed: "background.jpg")
+        background.position = CGPoint(x: 512, y: 384)
+        background.blendMode = .replace
+        background.zPosition = -1
+        addChild(background)
+        
+        addChild(scoreLabel)
+
+        if nowLevel < 3 {
+            nowLevel += 1
+        }
+        
+        loadLevel()
+        createPlayer()
+    }
 }
