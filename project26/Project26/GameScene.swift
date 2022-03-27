@@ -15,6 +15,7 @@ enum CollisionTypes: UInt32 {
 	case star = 4
 	case vortex = 8
 	case finish = 16
+    case teleport = 32
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -26,6 +27,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var isGameOver = false
 	var scoreLabel: SKLabelNode!
+    
+    var teleportTPosition: CGPoint!
+    var teleportWPosition: CGPoint!
+    var teleportEnable = true
 
 	var score = 0 {
 		didSet {
@@ -116,6 +121,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     node.physicsBody?.collisionBitMask = 0
                     node.position = position
                     addChild(node)
+                } else if letter == "t" {
+                    // load teleport
+                    let node = SKSpriteNode(color: .purple, size: CGSize(width: 64, height: 64))
+                    node.name = "teleportT"
+                    node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
+                    node.physicsBody?.isDynamic = false
+
+                    node.physicsBody?.categoryBitMask = CollisionTypes.teleport.rawValue
+                    node.physicsBody?.contactTestBitMask = CollisionTypes.player.rawValue
+                    node.physicsBody?.collisionBitMask = 0
+                    node.position = position
+                    teleportTPosition = position
+                    addChild(node)
+                } else if letter == "w" {
+                    // load teleport
+                    let node = SKSpriteNode(color: .purple, size: CGSize(width: 64, height: 64))
+                    node.name = "teleportW"
+                    node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
+                    node.physicsBody?.isDynamic = false
+
+                    node.physicsBody?.categoryBitMask = CollisionTypes.teleport.rawValue
+                    node.physicsBody?.contactTestBitMask = CollisionTypes.player.rawValue
+                    node.physicsBody?.collisionBitMask = 0
+                    node.position = position
+                    teleportWPosition = position
+                    addChild(node)
                 } else if letter == "f"  {
                     // load finish
                     let node = SKSpriteNode(imageNamed: "finish")
@@ -141,7 +172,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		player.physicsBody?.linearDamping = 0.5
 
 		player.physicsBody?.categoryBitMask = CollisionTypes.player.rawValue
-		player.physicsBody?.contactTestBitMask = CollisionTypes.star.rawValue | CollisionTypes.vortex.rawValue | CollisionTypes.finish.rawValue
+        player.physicsBody?.contactTestBitMask = CollisionTypes.star.rawValue | CollisionTypes.vortex.rawValue | CollisionTypes.finish.rawValue | CollisionTypes.teleport.rawValue
 		player.physicsBody?.collisionBitMask = CollisionTypes.wall.rawValue
 		addChild(player)
 	}
@@ -205,13 +236,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 				self.createPlayer()
 				self.isGameOver = false
 			}
+            
 		} else if node.name == "star" {
 			node.removeFromParent()
 			score += 1
+            
+        } else if node.name == "teleportT" {
+            guard teleportEnable else { return }
+            
+            player.physicsBody?.isDynamic = false
+            let remove = SKAction.removeFromParent()
+            let sequence = SKAction.sequence([remove])
+            
+            player.run(sequence) { [unowned self] in
+                self.player.position = teleportWPosition
+                self.player.physicsBody?.isDynamic = true
+                self.teleportEnable = false
+                self.teleportTimerStart()
+                self.addChild(self.player)
+            }
+            
+        } else if node.name == "teleportW" {
+            guard teleportEnable else { return }
+            
+            player.physicsBody?.isDynamic = false
+            let remove = SKAction.removeFromParent()
+            let sequence = SKAction.sequence([remove])
+            
+            player.run(sequence) { [unowned self] in
+                self.player.position = teleportTPosition
+                self.player.physicsBody?.isDynamic = true
+                self.teleportEnable = false
+                self.teleportTimerStart()
+                self.addChild(self.player)
+            }
+            
 		} else if node.name == "finish" {
 			nextLevel()
 		}
 	}
+    
+    func teleportTimerStart() {
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false, block: { [unowned self] timer in
+            self.teleportEnable = true
+        })
+    }
     
     func nextLevel() {
         self.removeAllChildren()
