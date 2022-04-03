@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Foundation
 
 class DetailViewController: UIViewController {
     @IBOutlet var imageView: UIImageView!
@@ -38,14 +39,35 @@ class DetailViewController: UIViewController {
     }
     
     @objc func shareTapped() {
+        
         guard let image = imageView.image?.jpegData(compressionQuality: 0.8) else {
             print("No image found")
             return
         }
         
-        let vc = UIActivityViewController(activityItems: [image], applicationActivities: [])
+        let newImage = addHeaderStringWith(image: imageView.image!)
+        
+        let vc = UIActivityViewController(activityItems: [newImage], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
     }
     
+    func addHeaderStringWith(image: UIImage) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: image.size.width, height: image.size.height))
+        
+        let img = renderer.image { ctx in
+            image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+
+            let attrs = [NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Thin", size: 36)!,
+                         NSAttributedString.Key.paragraphStyle: paragraphStyle]
+
+            let string = "From Storm Viewer."
+            string.draw(with: CGRect(x: 32, y: 32, width: image.size.width - 32, height: image.size.height - 32), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+        }
+
+        return img
+    }
 }
