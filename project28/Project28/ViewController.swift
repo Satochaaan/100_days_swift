@@ -11,6 +11,7 @@ import UIKit
 
 class ViewController: UIViewController {
 	@IBOutlet var secret: UITextView!
+    var doneButtonItem: UIBarButtonItem!
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -21,6 +22,9 @@ class ViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(saveSecretMessage), name: UIApplication.willResignActiveNotification, object: nil)
+        
+        doneButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedDoneButtonItem))
+        navigationItem.rightBarButtonItem = nil
 	}
 
 	@objc func adjustForKeyboard(notification: Notification) {
@@ -53,6 +57,7 @@ class ViewController: UIViewController {
 
 				DispatchQueue.main.async {
 					if success {
+                        self.navigationItem.rightBarButtonItem = self.doneButtonItem
 						self.unlockSecretMessage()
 					} else {
 						let ac = UIAlertController(title: "Authentication failed", message: "You could not be verified; please try again.", preferredStyle: .alert)
@@ -82,8 +87,13 @@ class ViewController: UIViewController {
 			KeychainWrapper.standard.set(secret.text, forKey: "SecretMessage")
 			secret.resignFirstResponder()
 			secret.isHidden = true
+            navigationItem.rightBarButtonItem = nil
 			title = "Nothing to see here"
 		}
 	}
+    
+    @objc func tappedDoneButtonItem() {
+        saveSecretMessage()
+    }
 }
 
