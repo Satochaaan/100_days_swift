@@ -25,6 +25,8 @@ class ViewController: UIViewController {
         
         doneButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedDoneButtonItem))
         navigationItem.rightBarButtonItem = nil
+        
+        setupPassword()
 	}
 
 	@objc func adjustForKeyboard(notification: Notification) {
@@ -60,9 +62,7 @@ class ViewController: UIViewController {
                         self.navigationItem.rightBarButtonItem = self.doneButtonItem
 						self.unlockSecretMessage()
 					} else {
-						let ac = UIAlertController(title: "Authentication failed", message: "You could not be verified; please try again.", preferredStyle: .alert)
-						ac.addAction(UIAlertAction(title: "OK", style: .default))
-						self.present(ac, animated: true)
+                        self.showPasswordAuth()
 					}
 				}
 			}
@@ -94,6 +94,33 @@ class ViewController: UIViewController {
     
     @objc func tappedDoneButtonItem() {
         saveSecretMessage()
+    }
+    
+    func setupPassword() {
+        if KeychainWrapper.standard.string(forKey: "password") == nil {
+            KeychainWrapper.standard.set("12345", forKey: "password")
+        }
+    }
+    
+    func showPasswordAuth() {
+        let ac = UIAlertController(title: "Input Password", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        ac.textFields?.first?.placeholder = "Input Password."
+        ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+            if let pass = KeychainWrapper.standard.string(forKey: "password") {
+                if ac.textFields?.first?.text == pass {
+                    self?.navigationItem.rightBarButtonItem = self?.doneButtonItem
+                    self?.unlockSecretMessage()
+                } else {
+                    let ac = UIAlertController(title: "Authentication failed", message: "You could not be verified; please try again.", preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    self?.present(ac, animated: true)
+                }
+            }
+        }))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(ac, animated: true)
     }
 }
 
