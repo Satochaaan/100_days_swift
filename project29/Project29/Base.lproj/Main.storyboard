@@ -95,11 +95,21 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wind: Left Up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cHK-kq-NSE">
+                                <rect key="frame" x="16" y="108" width="120" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="XdN-fj-fFk"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="1I1-U5-oa9" firstAttribute="leading" secondItem="wHM-hO-F8Z" secondAttribute="trailing" constant="8" id="0m0-pK-4mu"/>
                             <constraint firstItem="XYB-RG-jTV" firstAttribute="leading" secondItem="3se-qz-xqx" secondAttribute="leading" constant="16" id="23o-gh-sIQ"/>
+                            <constraint firstItem="cHK-kq-NSE" firstAttribute="leading" secondItem="3se-qz-xqx" secondAttribute="leading" constant="16" id="9S7-5H-KXn"/>
                             <constraint firstItem="Yz9-Dg-euo" firstAttribute="leading" secondItem="1I1-U5-oa9" secondAttribute="trailing" constant="32" id="B2f-D9-XKu"/>
                             <constraint firstItem="XaF-OL-EJH" firstAttribute="top" secondItem="8aa-yV-Osq" secondAttribute="bottom" constant="16" id="DCA-h7-zgm"/>
                             <constraint firstItem="XYB-RG-jTV" firstAttribute="top" secondItem="wHM-hO-F8Z" secondAttribute="bottom" constant="8" id="DHM-Jg-6v7"/>
@@ -108,6 +118,7 @@
                             <constraint firstAttribute="trailing" secondItem="xuC-y8-udf" secondAttribute="trailing" constant="16" id="J43-Ri-2SB"/>
                             <constraint firstItem="JDQ-wF-DuG" firstAttribute="centerX" secondItem="3se-qz-xqx" secondAttribute="centerX" id="RQe-zi-EBW"/>
                             <constraint firstItem="1I1-U5-oa9" firstAttribute="top" secondItem="8aa-yV-Osq" secondAttribute="bottom" constant="16" id="XBI-Ak-r1r"/>
+                            <constraint firstItem="cHK-kq-NSE" firstAttribute="top" secondItem="XYB-RG-jTV" secondAttribute="bottom" constant="13.5" id="eM3-Bq-Y6O"/>
                             <constraint firstItem="xuC-y8-udf" firstAttribute="top" secondItem="8aa-yV-Osq" secondAttribute="bottom" constant="8" id="ngX-G4-5Jy"/>
                             <constraint firstItem="2f9-QG-MaW" firstAttribute="top" secondItem="Yz9-Dg-euo" secondAttribute="bottom" constant="8" id="qk6-gf-iwf"/>
                             <constraint firstItem="JDQ-wF-DuG" firstAttribute="top" secondItem="Yz9-Dg-euo" secondAttribute="bottom" constant="16" id="sVV-AV-RWp"/>
@@ -119,6 +130,7 @@
                     <connections>
                         <outlet property="angleLabel" destination="1I1-U5-oa9" id="bOg-Rk-aO6"/>
                         <outlet property="angleSlider" destination="wHM-hO-F8Z" id="tvZ-j2-NUI"/>
+                        <outlet property="currentWindLabel" destination="cHK-kq-NSE" id="Ynt-ox-VQB"/>
                         <outlet property="launchButton" destination="xuC-y8-udf" id="vHI-Id-gl9"/>
                         <outlet property="player1ScoreLabel" destination="XYB-RG-jTV" id="qcb-2I-Aym"/>
                         <outlet property="player2ScoreLabel" destination="2f9-QG-MaW" id="vc0-jb-wjy"/>

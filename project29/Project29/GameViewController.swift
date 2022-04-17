@@ -24,6 +24,8 @@ class GameViewController: UIViewController {
     @IBOutlet var player1ScoreLabel: UILabel!
     @IBOutlet var player2ScoreLabel: UILabel!
     
+    @IBOutlet var currentWindLabel: UILabel!
+    
     var scorePlayer1 = 0 {
         didSet {
             player1ScoreLabel.text = String(scorePlayer1)
@@ -36,6 +38,12 @@ class GameViewController: UIViewController {
         }
     }
     
+    var currentWindName = "" {
+        didSet {
+            currentWindLabel.text = currentWindName
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -44,6 +52,7 @@ class GameViewController: UIViewController {
         
         scorePlayer1 = 0
         scorePlayer2 = 0
+        currentWindName = ""
 
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
@@ -56,6 +65,7 @@ class GameViewController: UIViewController {
 
 				currentGame = scene as? GameScene
 				currentGame.viewController = self
+                currentWindName = currentGame.currentWind.getName()
             }
             
             view.ignoresSiblingOrder = true

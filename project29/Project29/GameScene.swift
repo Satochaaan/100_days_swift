@@ -8,6 +8,38 @@
 
 import SpriteKit
 
+enum GravityType: UInt {
+    case leftLow = 0
+    case leftHigh = 1
+    case upLow = 2
+    case upHight = 3
+    case rightLow = 4
+    case rightHigh = 5
+    case downLow = 6
+    case downHigh = 7
+    
+    func getName() -> String {
+        switch self {
+        case .leftLow:
+            return "Left Low"
+        case .leftHigh:
+            return "Left High"
+        case .upLow:
+            return "Up Low"
+        case .upHight:
+            return "Up High"
+        case .rightLow:
+            return "Right Low"
+        case .rightHigh:
+            return "Right High"
+        case .downLow:
+            return "Down Low"
+        case .downHigh:
+            return "Down High"
+        }
+    }
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
 	weak var viewController: GameViewController!
 
@@ -17,6 +49,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var banana: SKSpriteNode!
 
 	var currentPlayer = 1
+    var currentWind: GravityType!
 
     override func didMove(to view: SKView) {
 		physicsWorld.contactDelegate = self
@@ -24,6 +57,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		backgroundColor = UIColor(hue: 0.669, saturation: 0.99, brightness: 0.67, alpha: 1)
 		createBuildings()
 		createPlayers()
+        
+        currentWind = GravityType(rawValue: UInt.random(in: 0...7))
+        physicsWorld.gravity = getGravity(type: currentWind)
     }
 
 	func createBuildings() {
@@ -180,6 +216,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 			let transition = SKTransition.doorway(withDuration: 1.5)
 			self.view?.presentScene(newGame, transition: transition)
+            self.viewController.currentWindName = self.currentWind.getName()
 		}
 	}
 
@@ -207,6 +244,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 		changePlayer()
 	}
+    
+    private func getGravity(type: GravityType) -> CGVector {
+        switch type {
+        case .leftLow:
+            return CGVector(dx: -1.0, dy: -9.8)
+        case .leftHigh:
+            return CGVector(dx: -3.0, dy: -9.8)
+        case .upLow:
+            return CGVector(dx: 0.0, dy: -8.8)
+        case .upHight:
+            return CGVector(dx: 0.0, dy: -6.8)
+        case .rightLow:
+            return CGVector(dx: 1.0, dy: -9.8)
+        case .rightHigh:
+            return CGVector(dx: 3.0, dy: -9.8)
+        case .downLow:
+            return CGVector(dx: 0.0, dy: -10.8)
+        case .downHigh:
+            return CGVector(dx: 0.0, dy: -12.8)
+        }
+    }
 
 	override func update(_ currentTime: TimeInterval) {
 		if banana != nil {
