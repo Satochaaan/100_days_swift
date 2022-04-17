@@ -21,11 +21,29 @@ class GameViewController: UIViewController {
 	@IBOutlet var launchButton: UIButton!
 	@IBOutlet var playerNumber: UILabel!
 
+    @IBOutlet var player1ScoreLabel: UILabel!
+    @IBOutlet var player2ScoreLabel: UILabel!
+    
+    var scorePlayer1 = 0 {
+        didSet {
+            player1ScoreLabel.text = String(scorePlayer1)
+        }
+    }
+    
+    var scorePlayer2 = 0 {
+        didSet {
+            player2ScoreLabel.text = String(scorePlayer2)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
 		angleChanged(angleSlider)
 		velocityChanged(velocitySlider)
+        
+        scorePlayer1 = 0
+        scorePlayer2 = 0
 
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
@@ -98,4 +116,12 @@ class GameViewController: UIViewController {
 
 		launchButton.isHidden = false
 	}
+    
+    func finishGame() {
+        if scorePlayer1 < scorePlayer2 {
+            playerNumber.text = "PLAYER TWO WIN!!!"
+        } else {
+            playerNumber.text = "PLAYER ONE WIN!!!"
+        }
+    }
 }

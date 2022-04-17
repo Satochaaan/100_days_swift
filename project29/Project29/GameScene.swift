@@ -144,11 +144,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 				}
 
 				if firstNode.name == "banana" && secondNode.name == "player1" {
+                    viewController.scorePlayer2 += 100
 					destroy(player: player1)
 				}
 
 				if firstNode.name == "banana" && secondNode.name == "player2" {
-					destroy(player: player2)
+                    viewController.scorePlayer1 += 100
+                    destroy(player: player2)
 				}
 			}
 		}
@@ -163,6 +165,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		banana?.removeFromParent()
 
 		DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [unowned self] in
+            
+            if viewController.scorePlayer1 >= 300 || viewController.scorePlayer2 >= 300 {
+                viewController.finishGame()
+                return
+            }
+            
 			let newGame = GameScene(size: self.size)
 			newGame.viewController = self.viewController
 			self.viewController.currentGame = newGame
